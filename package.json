@@ -45,6 +45,10 @@
     "@types/humanize-duration": "^3.27.0",
     "@types/ioredis": "^4.28.1",
     "@types/jest": "^27.0.3",
-    "@types/node": "^16.11.11"
+    "@types/node": "^16.11.11",
+    "ts-node": "^10.4.0"
+  },
+  "engines": {
+    "node" : ">=16.0.0" 
   }
 }
