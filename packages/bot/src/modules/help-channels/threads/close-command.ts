@@ -1,3 +1,7 @@
+// Copyright (c) 2021 Siberian, Inc. All rights reserved.
+// Use of this source code is governed by the MIT license that can be
+// found in the LICENSE file.
+
 import {
   CommandInteraction,
   GuildMemberRoleManager,
@@ -5,16 +9,15 @@ import {
   ThreadChannel,
 } from 'discord.js'
 import { guild } from '../../../lib/config'
-import { api } from '../../../lib/api'
-import { IGetHelpChanByChannelIdResponse } from '../../../lib/types'
+import { HelpChannel } from '../../../entities/help-channel'
 
 export async function threadCloseCommand(msg: CommandInteraction) {
-  const { data: owner } = await api.get<IGetHelpChanByChannelIdResponse>(
-    `/helpchan/${msg.channel!.id}`,
-  )
+  const channel = await HelpChannel.findOne({
+    where: { channel_id: msg.channel!.id },
+  })
 
   if (
-    (owner && owner.user_id === msg.member?.user.id) ||
+    (channel && channel.user_id === msg.member?.user.id) ||
     (typeof msg.member?.permissions !== 'string' &&
       msg.member?.permissions.has(Permissions.FLAGS.MANAGE_MESSAGES)) ||
     (!Array.isArray(msg.member?.roles) &&
@@ -28,7 +31,7 @@ export async function threadCloseCommand(msg: CommandInteraction) {
     const roleManger = msg.member?.roles as GuildMemberRoleManager
     await roleManger.remove(guild.roles.helpCooldown)
 
-    await api.delete(`/helpchan/${msg.channel!.id}`)
+    await channel!.remove()
 
     return await (msg.channel as ThreadChannel).setArchived(
       true,

@@ -1,5 +1,14 @@
-import { applicationCommand, LunaworkClient } from '@siberianmh/lunawork'
-import { listener, button } from '@siberianmh/lunawork'
+// Copyright (c) 2021 Siberian, Inc. All rights reserved.
+// Use of this source code is governed by the MIT license that can be
+// found in the LICENSE file.
+
+import {
+  applicationCommand,
+  LunaworkClient,
+  ApplicationCommandOptionType,
+  listener,
+  button,
+} from '@siberianmh/lunawork'
 import {
   Message,
   MessageEmbed,
@@ -48,15 +57,18 @@ export class EtcModule extends ExtendedModule {
       {
         name: 'gist_id',
         description: 'The id of the gist',
-        type: 'STRING',
+        type: ApplicationCommandOptionType.String,
         required: true,
       },
     ],
     // Because it's test and i don't want to peoples to use this
     inhibitors: [isTrustedMember],
   })
-  public async fiddle(msg: CommandInteraction, gistId: string): Promise<void> {
-    if (gistId.startsWith('https://' || 'http://')) {
+  public async fiddle(
+    msg: CommandInteraction,
+    { gist_id }: { gist_id: string },
+  ): Promise<void> {
+    if (gist_id.startsWith('https://' || 'http://')) {
       return msg.reply({
         content: 'The id should be in format number',
         ephemeral: true,
@@ -65,7 +77,7 @@ export class EtcModule extends ExtendedModule {
 
     // Possible be to `gist/username/hash` and `gist/hash`
     // Documented on https://github.com/electron/fiddle/blob/master/src/main/protocol.ts#L29
-    const fiddleURL = `<electron-fiddle://gist/${gistId}>`
+    const fiddleURL = `<electron-fiddle://gist/${gist_id}>`
 
     const message = `Electron Fiddle lets you create and play with small Electron experiments.
 You can launch Electron Fiddle with the provided Gist using this URL: ${fiddleURL}
@@ -91,18 +103,6 @@ You can launch Electron Fiddle with the provided Gist using this URL: ${fiddleUR
     }
 
     return await msg.crosspost()
-  }
-
-  @listener({ event: 'messageCreate' })
-  public async createPoll(msg: Message): Promise<void> {
-    if (msg.author.bot || !msg.content.toLowerCase().startsWith('poll:')) {
-      return
-    }
-    await msg.react('✅')
-    await msg.react('❌')
-    await msg.react('🤷')
-
-    return
   }
 
   @button({ customID: 'trashIcon' })

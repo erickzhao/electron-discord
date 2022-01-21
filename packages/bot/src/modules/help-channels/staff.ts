@@ -1,5 +1,13 @@
-import { LunaworkClient } from '@siberianmh/lunawork'
-import { applicationCommand } from '@siberianmh/lunawork'
+// Copyright (c) 2021 Siberian, Inc. All rights reserved.
+// Use of this source code is governed by the MIT license that can be
+// found in the LICENSE file.
+
+import {
+  LunaworkClient,
+  applicationCommand,
+  ApplicationCommandOptionType,
+  ApplicationCommandTypes,
+} from '@siberianmh/lunawork'
 import {
   Guild,
   Message,
@@ -8,19 +16,22 @@ import {
   TextChannel,
   MessageEmbed,
   ContextMenuInteraction,
+  GuildMemberRoleManager,
 } from 'discord.js'
 import { isTrustedMember, noAuthorizedClaim, noDM } from '../../lib/inhibitors'
 import { guild } from '../../lib/config'
 import * as config from '../../lib/config'
 import { HelpChanBase } from './base'
-import {
-  IGetHelpChanByUserIdResponse,
-  IListHelpChannelsRespone,
-} from '../../lib/types'
 import { availableEmbed } from './embeds/available'
 import { helpChannelStatusEmbed } from './embeds/status'
 import { Subcommands } from './subcommands'
+import { HelpChannel } from '../../entities/help-channel'
 
+/**
+ * That class contains the interactions (commands, etc) that can be only
+ * used by the admin team. There shouldn't be stored commands that can
+ * be executed by standard members, except `/helpchan cooldown`
+ */
 export class HelpChannelStaff extends HelpChanBase {
   public constructor(client: LunaworkClient) {
     super(client)
@@ -29,9 +40,7 @@ export class HelpChannelStaff extends HelpChanBase {
   //#region Commands
   @applicationCommand({
     name: 'Claim Message',
-    description: '',
-    // @ts-ignore | Will be fixed on the next @siberianmh/lunawork release
-    type: 'MESSAGE',
+    type: ApplicationCommandTypes.MESSAGE,
     inhibitors: [noAuthorizedClaim],
   })
   public async claimContextMenu(msg: ContextMenuInteraction) {
@@ -64,12 +73,12 @@ export class HelpChannelStaff extends HelpChanBase {
       {
         name: 'user',
         description: 'The user itself',
-        type: 'USER',
+        type: ApplicationCommandOptionType.User,
         required: true,
       },
       {
-        type: 'NUMBER',
         name: 'limit',
+        type: ApplicationCommandOptionType.Number,
         description:
           'The limit of messages which needed to be claimed (default to 10)',
       },
@@ -78,8 +87,7 @@ export class HelpChannelStaff extends HelpChanBase {
   })
   public async claim(
     msg: CommandInteraction,
-    member: GuildMember,
-    limit?: number,
+    { user: member, limit }: { user: GuildMember; limit?: number },
   ) {
     return await this.claimBase({ msg: msg, member: member, limit })
   }
@@ -92,6 +100,11 @@ export class HelpChannelStaff extends HelpChanBase {
         type: 1,
         name: 'status',
         description: 'Get the status of the help channels',
+      },
+      {
+        type: 1,
+        name: 'cooldown',
+        description: 'Check if you are has an cooldown',
       },
       {
         type: 1,
@@ -117,18 +130,30 @@ export class HelpChannelStaff extends HelpChanBase {
         description: 'Synchronize the help channels to the current status',
       },
     ],
-    inhibitors: [isTrustedMember],
   })
   public async helpchan(
     msg: CommandInteraction,
-    baseCommand: Subcommands,
-    arg1: string,
+    { subCommand, ...props }: { subCommand: Subcommands },
   ) {
-    switch (baseCommand) {
+    const value = Object.values(props)[0]
+    if (subCommand === 'cooldown') {
+      return await this.fixOrTrustCooldown(msg)
+    }
+
+    const forbidden = await isTrustedMember(msg, this.client)
+    if (forbidden) {
+      return msg.reply({
+        // @ts-expect-error
+        content: forbidden,
+        ephemeral: true,
+      })
+    }
+
+    switch (subCommand) {
       case 'status':
         return await this.showStatus(msg)
       case 'create':
-        return await this.createChannel(msg, arg1)
+        return await this.createChannel(msg, value)
       case 'update':
         return await this.updateHelpChannels(msg)
       case 'sync':
@@ -147,9 +172,7 @@ export class HelpChannelStaff extends HelpChanBase {
       )
       .filter((channel) => channel.name.startsWith(this.CHANNEL_PREFIX))
 
-    const { data: ongoing } = await this.api.get<IListHelpChannelsRespone>(
-      '/helpchan',
-    )
+    const ongoing = await HelpChannel.find()
 
     const dormant = msg
       .guild!.channels.cache.filter(
@@ -195,7 +218,7 @@ export class HelpChannelStaff extends HelpChanBase {
     limit = 10,
     replyMsg,
   }: {
-    msg: CommandInteraction
+    msg: CommandInteraction | ContextMenuInteraction
     member: GuildMember
     limit?: number
     replyMsg?: Message
@@ -207,20 +230,15 @@ export class HelpChannelStaff extends HelpChanBase {
       })
     }
 
-    try {
-      const { data: helpChannel } =
-        await this.api.get<IGetHelpChanByUserIdResponse>(
-          `/helpchan/user/${member.id}`,
-        )
+    const helpChannel = await HelpChannel.findOne({
+      where: { user_id: member.id },
+    })
 
-      if (helpChannel) {
-        return msg.reply({
-          content: `${member.displayName} already has <#${helpChannel.channel_id}>`,
-          ephemeral: true,
-        })
-      }
-    } catch {
-      // It's fine because it's that what's we search
+    if (helpChannel) {
+      return msg.reply({
+        content: `${member.displayName} already has <#${helpChannel.channel_id}>`,
+        ephemeral: true,
+      })
     }
 
     const claimedChannel = msg.guild?.channels.cache.find(
@@ -321,6 +339,31 @@ export class HelpChannelStaff extends HelpChanBase {
     const content = 'Help Channel system successfully synced'
     return msg.reply({
       content,
+    })
+  }
+
+  private async fixOrTrustCooldown(msg: CommandInteraction) {
+    const memberRoleManagger = msg.member?.roles as GuildMemberRoleManager
+
+    if (!memberRoleManagger.cache.has(config.guild.roles.helpCooldown)) {
+      return msg.reply({
+        content: `<@${msg.member?.user.id}> doesn't have a cooldown`,
+      })
+    }
+
+    const channel = await HelpChannel.findOne({
+      where: { user_id: msg.member.user.id },
+    })
+
+    if (channel) {
+      return msg.reply({
+        content: `<@${msg.member?.user.id}> has an active help channel: <#${channel.channel_id}>`,
+      })
+    }
+
+    await memberRoleManagger.remove(config.guild.roles.helpCooldown)
+    return msg.reply({
+      content: 'Cooldown successfully removed',
     })
   }
 }

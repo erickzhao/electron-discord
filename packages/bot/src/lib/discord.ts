@@ -1,3 +1,7 @@
+// Copyright (c) 2021 Siberian, Inc. All rights reserved.
+// Use of this source code is governed by the MIT license that can be
+// found in the LICENSE file.
+
 import { LunaworkClient } from '@siberianmh/lunawork'
 import { Intents } from 'discord.js'
 
@@ -22,8 +26,8 @@ export const client = new LunaworkClient({
   presence: {
     activities: [
       {
-        type: 'WATCHING',
-        name: 'Of Course I Still Love You',
+        type: 'PLAYING',
+        name: 'хочу подраться, да никого кругом',
       },
     ],
   },

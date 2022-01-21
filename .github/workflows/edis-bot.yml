@@ -15,64 +15,36 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-      - uses: actions/cache@v2
-        id: bazel-cache
+      - uses: actions/setup-node@v2
         with:
-          path: /home/runner/.cache/bazel
-          key: bazel_core
+          node-version: '16'
+          cache: 'yarn'
+      - run: yarn
       - name: Compile bot
         run: |
-          bazel build //packages/bot
-
-  #################
-  # Docker Builds #
-  #################
-  docker-bot:
-    runs-on: ubuntu-20.04
-    if: github['ref'] == 'refs/heads/main'
-
-    needs:
-      - compile-bot
-
-    steps:
-      - uses: actions/checkout@v2
-      - uses: actions/cache@v2
-        id: bazel-cache
-        with:
-          path: /home/runner/.cache/bazel
-          key: bazel_core
+          yarn workspace @sib-edis/bot build
+      #################
+      # Docker Builds #
+      #################
       - name: Login to Packages Container registry
         uses: docker/login-action@v1.10.0
         with:
           registry: ghcr.io
-          username: pacificocean-bot
-          password: ${{ secrets.CR_PAT }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build Docker PR Image
+        if: github['ref'] != 'refs/heads/main'
+        run: |
+          docker build --pull -f "Dockerfile.bot" -t ghcr.io/siberianmh/edis-bot:${{ github.event.pull_request.head.sha }} .
+          docker push ghcr.io/siberianmh/edis-bot:${{ github.event.pull_request.head.sha }}
       - name: Build Docker Image
+        if: github['ref'] == 'refs/heads/main'
         run: |
-          bazel build //packages/bot:docker-bot
-      - name: Publish Latest Docker Image
-        run: |
-          bazel run //packages/bot:push-bot
-
-  #############
-  # Deploying #
-  #############
-  deploy-bot:
-    environment: production-bot
-    runs-on: ubuntu-20.04
-    if: github['ref'] == 'refs/heads/main'
-
-    needs:
-      - docker-bot
-
-    steps:
-      - uses: actions/checkout@v2
-      - name: Install doctl
-        uses: digitalocean/action-doctl@v2
-        with:
-          token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
-      - name: Save DigitalOcean kubeconfig
-        run: doctl kubernetes cluster kubeconfig save siberianmh-core
+          docker build --pull -f "Dockerfile.bot" -t ghcr.io/siberianmh/edis-bot:latest .
+          docker push ghcr.io/siberianmh/edis-bot:latest
+      #############
+      # Deploying #
+      #############
       - name: Rollout
         run: |
-          kubectl rollout restart deploy/edis-bot
+          echo "Usually we don't deploy code, so here we do the same"

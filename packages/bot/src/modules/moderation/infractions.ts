@@ -1,4 +1,12 @@
-import { LunaworkClient, applicationCommand } from '@siberianmh/lunawork'
+// Copyright (c) 2021 Siberian, Inc. All rights reserved.
+// Use of this source code is governed by the MIT license that can be
+// found in the LICENSE file.
+
+import {
+  LunaworkClient,
+  applicationCommand,
+  ApplicationCommandOptionType,
+} from '@siberianmh/lunawork'
 import {
   Message,
   MessageEmbed,
@@ -10,7 +18,8 @@ import {
 import { ExtendedModule } from '../../lib/extended-module'
 import { isTrustedMember } from '../../lib/inhibitors'
 import { guild } from '../../lib/config'
-import { InfractionType, infractionType } from '../../lib/types'
+import { IInfraction, InfractionType, infractionType } from '../../lib/types'
+import { Infractions } from '../../entities/infractions'
 
 interface IPerformInfractionProps {
   readonly user: User | GuildMember
@@ -41,20 +50,20 @@ export class InfractionsModule extends ExtendedModule {
     description: 'Kick the bad person',
     options: [
       {
-        type: 'STRING',
+        type: ApplicationCommandOptionType.String,
         name: 'user',
         description:
           'The user id which needed to be kicked (the id, not user nickname)',
         required: true,
       },
       {
-        type: 'STRING',
+        type: ApplicationCommandOptionType.String,
         name: 'reason',
         description: 'Reason to kick',
         required: true,
       },
       {
-        type: 'BOOLEAN',
+        type: ApplicationCommandOptionType.Boolean,
         name: 'silence',
         description: 'Kick the person in the silent mode',
       },
@@ -63,9 +72,11 @@ export class InfractionsModule extends ExtendedModule {
   })
   public async kick(
     msg: CommandInteraction,
-    user: string,
-    reason: string,
-    silence?: boolean,
+    {
+      user,
+      reason,
+      silence,
+    }: { user: string; reason: string; silence?: boolean },
   ) {
     let member: GuildMember | undefined
     const res = this.USER_PATTERN.exec(user)
@@ -89,24 +100,24 @@ export class InfractionsModule extends ExtendedModule {
     description: 'Ban the bad person',
     options: [
       {
-        type: 'STRING',
+        type: ApplicationCommandOptionType.String,
         name: 'user',
         description: 'The user which needed to be banned',
         required: true,
       },
       {
-        type: 'STRING',
+        type: ApplicationCommandOptionType.String,
         name: 'reason',
         description: 'Reason to ban',
         required: true,
       },
       {
-        type: 'BOOLEAN',
+        type: ApplicationCommandOptionType.Boolean,
         name: 'purge',
         description: 'Cleans the messages',
       },
       {
-        type: 'BOOLEAN',
+        type: ApplicationCommandOptionType.Boolean,
         name: 'silence',
         description: 'Ban the person in the silent mode',
       },
@@ -115,10 +126,12 @@ export class InfractionsModule extends ExtendedModule {
   })
   public async ban(
     msg: CommandInteraction,
-    user: string,
-    reason: string,
-    purge: boolean,
-    silence: boolean,
+    {
+      user,
+      reason,
+      purge,
+      silence,
+    }: { user: string; reason: string; purge: boolean; silence: boolean },
   ) {
     let member: GuildMember | undefined
     const res = this.USER_PATTERN.exec(user)
@@ -159,22 +172,23 @@ export class InfractionsModule extends ExtendedModule {
    * Warn a user for the given reason.
    */
   @applicationCommand({
+    name: 'warn',
     description: 'Warn the bad person',
     options: [
       {
-        type: 'STRING',
+        type: ApplicationCommandOptionType.String,
         name: 'user',
         description: 'The user which needed to be warned',
         required: true,
       },
       {
-        type: 'STRING',
+        type: ApplicationCommandOptionType.String,
         name: 'reason',
         description: 'Reason to warn',
         required: true,
       },
       {
-        type: 'BOOLEAN',
+        type: ApplicationCommandOptionType.Boolean,
         name: 'silence',
         description: 'Warn the person in the silent mode',
       },
@@ -183,9 +197,11 @@ export class InfractionsModule extends ExtendedModule {
   })
   public async warn(
     msg: CommandInteraction,
-    user: string,
-    reason: string,
-    silence?: boolean,
+    {
+      user,
+      reason,
+      silence,
+    }: { user: string; reason: string; silence?: boolean },
   ) {
     let member: GuildMember | undefined
     const res = this.USER_PATTERN.exec(user)
@@ -303,6 +319,14 @@ export class InfractionsModule extends ExtendedModule {
       type: props.type,
       active: true,
     })
+  }
+
+  private async addInfraction(opts: IInfraction) {
+    const infraction = await Infractions.create({
+      ...opts,
+    }).save()
+
+    return infraction
   }
 
   private async notifyInfraction(props: INotifyInfractionProps) {

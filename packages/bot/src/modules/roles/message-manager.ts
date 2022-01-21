@@ -1,9 +1,13 @@
+// Copyright (c) 2021 Siberian, Inc. All rights reserved.
+// Use of this source code is governed by the MIT license that can be
+// found in the LICENSE file.
+
 import { MessageEmbed, TextChannel } from 'discord.js'
 import { style } from '../../lib/config'
-import { ICreateMessageRoleResponse, IRoleMessage } from '../../lib/types'
+import { IRoleMessage } from '../../lib/types'
 import { pronousRoles } from './reaction-messages/pronouns'
 import { operationSystemRoles } from './reaction-messages/operation-system'
-import { api } from '../../lib/api'
+import { MessageRoles, MessageRolesActions } from '../../entities/roles'
 
 const createMessageEntry = async (
   entry: IRoleMessage,
@@ -20,21 +24,18 @@ const createMessageEntry = async (
     .setColor(style.colors.electronBlue)
   const dsCreatedMessage = await channel.send({ embeds: [embed] })
 
-  const { data: roleEntry } = await api.post<ICreateMessageRoleResponse>(
-    '/message-roles',
-    {
-      name: entry.name,
-      message_id: dsCreatedMessage.id,
-    },
-  )
+  const roleEntry = await MessageRoles.create({
+    name: entry.name,
+    message_id: dsCreatedMessage.id,
+  }).save()
 
   entry.reactions.forEach(async (reaction) => {
-    await api.post('/message-roles/actions', {
+    await MessageRolesActions.create({
       role_id: reaction.roleId,
       emoji_id: reaction.emojiId,
       auto_remove: reaction.autoRemove,
       message_role: roleEntry,
-    })
+    }).save()
   })
 
   return entry.reactions.map(async (reaction) => {

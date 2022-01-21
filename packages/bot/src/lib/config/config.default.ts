@@ -1,3 +1,7 @@
+// Copyright (c) 2021 Siberian, Inc. All rights reserved.
+// Use of this source code is governed by the MIT license that can be
+// found in the LICENSE file.
+
 import { toBigIntLiteral as b } from '../to-bigint-literal'
 import { IStyle } from './types'
 
@@ -90,6 +94,11 @@ export const guild = {
     macOS: b('778343887382773801'),
     linux: b('778343916108906507'),
 
+    //#endregion
+
+    //#region Events
+    // Hacktoberfest
+    hacktoberfest: '893578484172091432',
     //#endregion
   },
 }

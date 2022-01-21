@@ -1,3 +1,7 @@
+// Copyright (c) 2021 Siberian, Inc. All rights reserved.
+// Use of this source code is governed by the MIT license that can be
+// found in the LICENSE file.
+
 import { LunaworkClient } from '@siberianmh/lunawork'
 import {
   Message,
@@ -7,12 +11,17 @@ import {
   Guild,
   ThreadChannel,
 } from 'discord.js'
+import { HelpChannel } from '../../entities/help-channel'
 import { ExtendedModule } from '../../lib/extended-module'
 import { helpChannels, guild } from '../../lib/config'
 import * as config from '../../lib/config'
 import { availableEmbed } from './embeds/available'
 import { helpMessage } from './help-message'
 
+/**
+ * An base help channel class that share code between public and
+ * internal commands.
+ */
 export class HelpChanBase extends ExtendedModule {
   public constructor(client: LunaworkClient) {
     super(client)
@@ -20,10 +29,17 @@ export class HelpChanBase extends ExtendedModule {
 
   protected CHANNEL_PREFIX = helpChannels.namePrefix
 
+  /**
+   * Moves the channel from the some place, to the specific category,
+   * with syncing the permissions.
+   *
+   * @param channel The channel that should be moved
+   * @param category The id of the category to which channel should be moved.
+   */
   protected async moveChannel(
     channel: TextChannel,
     category: GuildChannelResolvable,
-  ) {
+  ): Promise<TextChannel | void> {
     const parent = channel.guild.channels.resolve(category)
     if (parent === null || parent instanceof ThreadChannel) {
       return
@@ -39,20 +55,43 @@ export class HelpChanBase extends ExtendedModule {
     })
   }
 
-  protected async addCooldown(member: GuildMember) {
-    return await member.roles.add(guild.roles.helpCooldown)
+  /**
+   * Add the cooldown to the specific member.
+   *
+   * @param member The member to which cooldown should be added.
+   */
+  protected async addCooldown(
+    member: GuildMember,
+  ): Promise<GuildMember | void> {
+    try {
+      return await member.roles.add(guild.roles.helpCooldown)
+    } catch (err) {
+      console.error(
+        `An error expected when trying to add cooldown for ${member.displayName} (${member.id})`,
+        err,
+      )
+      return
+    }
   }
 
+  /**
+   * Create the representation of the help channel in the database.
+   *
+   * @param member The member who open help channel
+   * @param channel The channel that member take to the getting help
+   * @param msg The first message that send member to the help channel
+   * @returns
+   */
   protected async populateHelpChannel(
     member: GuildMember,
     channel: TextChannel,
     msg: Message,
   ) {
-    return await this.api.post('/helpchan', {
+    return await HelpChannel.create({
       user_id: member.user.id,
       channel_id: channel.id,
       message_id: msg.id,
-    })
+    }).save()
   }
 
   protected async ensureAskChannels(guild: Guild): Promise<void | Message> {
