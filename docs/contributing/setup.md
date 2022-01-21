@@ -39,17 +39,20 @@ You need to create the Bot account, you can do this following these steps:
    [Discord Developer Portal](https://discord.com/developers/applications).
 1. Click on the `New Application`, button, enter the bot name, and click
    `Create`.
-1. On the application page, go to the `Bot` section, and click `Add bot`,, and
-   confirm `Yes, do it!`.
+1. On the application page, go to the `Bot` section, and click `Add bot`, and
+   confirm when prompted.
 1. Change the setting of `Public Bot` to off, and copy the `Bot Token`, and save
    them in the `.env` file in the root project directory. Under
    `Privileged Gateway Intents` enable all\*
-1. In the `General Information` section, take the **Client ID**, and invite the
+1. In the `General Information` section, take the **Application ID**, and invite the
    bot using the following URL:
 
 ```http
-https://discordapp.com/api/oauth2/authorize?client_id=<CLIENT_ID>&permissions=8&scope=bot
+https://discord.com/api/oauth2/authorize?client_id=<CLIENT_ID>&permissions=8&scope=bot%20applications.commands
 ```
+
+This will give the bot `Administrator` permissions as well as access to
+slash commands.
 
 \* - Either way, we don't require them all, but for stable bot work, it's
 preferred to enable them all.
