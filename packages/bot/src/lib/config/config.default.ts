@@ -48,25 +48,27 @@ export const style: IStyle = {
 }
 
 export const guild = {
-  id: b('745037351163527189'),
-  invite: 'https://discord.gg/electron',
+  id: b('928801162600255509'),
+  invite: 'https://discord.gg/electronjs',
 
   categories: {
-    helpAvailable: b('745038318479081483'),
-    helpOngoing: b('763429207791239168'),
-    helpDormant: b('763429965726351392'),
+    helpAvailable: b('928801163548192782'),
+    helpOngoing: b('928801163548192785'),
+    helpDormant: b('928801163548192786'),
   },
 
+  // these are hard-coded channel ID values
+  // change if this changes!
   channels: {
-    roles: b('760189688492720139'),
-    releases: b('750040178961416242'),
-    rules: b('745041677185450005'),
-    voiceRules: b('776136611510747186'),
-    adminBotInteractions: b('771069886696914994'),
-    memberLog: b('852981464291606539'),
-    askHelpChannel: b('748284419525312553'),
-    threadHelpChannel: b('876596141523886170'),
-    modLog: b('764542608256270406'),
+    roles: b('928801163170684960'),
+    releases: b('928801163170684961'),
+    rules: b('928801163170684962'),
+    voiceRules: b('928801163170684963'),
+    adminBotInteractions: b('928801163170684967'),
+    memberLog: b('928801163548192778'),
+    askHelpChannel: b('928801163170684964'),
+    threadHelpChannel: b('928801163170684965'),
+    modLog: b('928801163548192779'),
   },
 
   roles: {
