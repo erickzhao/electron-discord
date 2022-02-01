@@ -7,67 +7,66 @@ if (process.env.NODE_ENV === 'development') {
 }
 
 import { Stage } from '@siberianmh/lunawork'
-import * as Sentry from '@sentry/node'
+// import * as Sentry from '@sentry/node'
 import {
   AntimalwareStage,
   FiltersStage,
-  DownloadModule,
+  // DownloadModule,
   DocsModule,
   EtcModule,
   ThreadHelpStage,
   HacktoberfestStage,
-  HelpChanModule,
-  HelpChannelStaff,
-  InfractionsModule,
+  // HelpChanModule,
+  // HelpChannelStaff,
+  // InfractionsModule,
   ModLogModule,
   MiscStuffStage,
-  RobloxGamePresenceModule,
-  RolesModule,
+  // RobloxGamePresenceModule,
+  // RolesModule,
   RulesModule,
   TagsModule,
   UnfurlModule,
 } from './modules'
 import { client } from './lib/discord'
-import { connectMySQL } from './lib/connect-mysql'
+// import { connectMySQL } from './lib/connect-mysql'
 import { enableRolesModule, enableThreadHelp } from './lib/runtime'
 
-Sentry.init({
-  dsn: 'https://a22da8923d5f4ea7875fa8518335410b@o102026.ingest.sentry.io/5474186',
-  enabled: process.env.NODE_ENV !== 'development',
-  tracesSampleRate: 1.0,
-})
+// Sentry.init({
+//   dsn: 'https://a22da8923d5f4ea7875fa8518335410b@o102026.ingest.sentry.io/5474186',
+//   enabled: process.env.NODE_ENV !== 'development',
+//   tracesSampleRate: 1.0,
+// })
 
 const stages: Array<typeof Stage | Stage> = [
-  AntimalwareStage,
+  // AntimalwareStage,
   FiltersStage,
   MiscStuffStage,
-  DownloadModule,
+  // DownloadModule,
   DocsModule,
   EtcModule,
   HacktoberfestStage,
-  HelpChanModule,
-  HelpChannelStaff,
-  InfractionsModule,
+  // HelpChanModule,
+  // HelpChannelStaff,
+  // InfractionsModule,
   ModLogModule,
-  RobloxGamePresenceModule,
+  // RobloxGamePresenceModule,
   RulesModule,
   TagsModule,
+  ThreadHelpStage,
   UnfurlModule,
 ]
 
-if (enableThreadHelp) {
-  stages.push(ThreadHelpStage)
-}
+// if (enableThreadHelp) {
+//   stages.push(ThreadHelpStage)
+// }
 
-if (enableRolesModule) {
-  stages.push(RolesModule)
-}
+// if (enableRolesModule) {
+//   stages.push(RolesModule)
+// }
 
 client.registerStages(stages)
 
-connectMySQL().then(() => {
-  client.login(process.env.DISCORD_TOKEN)
-  client.on('ready', () => {
-    console.log(`Logged in as ${client.user?.tag}`)
-  })
+client.login(process.env.DISCORD_TOKEN)
+client.on('ready', () => {
+  console.log(`Logged in as ${client.user?.tag}`)
 })

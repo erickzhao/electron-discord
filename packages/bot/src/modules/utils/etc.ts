@@ -23,7 +23,7 @@ import * as humanizeDuration from 'humanize-duration'
 import { ExtendedModule } from '../../lib/extended-module'
 import { guild } from '../../lib/config'
 import { isTrustedMember } from '../../lib/inhibitors'
-import { redis, selfDestructMessage } from '../../lib/redis'
+import { selfDestructMessage } from '../../lib/redis'
 import { toBigIntLiteral } from '../../lib/to-bigint-literal'
 
 export class EtcModule extends ExtendedModule {
@@ -105,66 +105,66 @@ You can launch Electron Fiddle with the provided Gist using this URL: ${fiddleUR
     return await msg.crosspost()
   }
 
-  @button({ customID: 'trashIcon' })
-  public async bucketButtonClicked(msg: ButtonInteraction) {
-    const key = await redis.get(selfDestructMessage(msg.message.id))
+  // @button({ customID: 'trashIcon' })
+  // public async bucketButtonClicked(msg: ButtonInteraction) {
+  //   const key = await redis.get(selfDestructMessage(msg.message.id))
 
-    if (!key) {
-      return
-    }
+  //   if (!key) {
+  //     return
+  //   }
 
-    const typedMemberRole = msg.member?.roles as GuildMemberRoleManager
-    if (
-      msg.user.id === key ||
-      typedMemberRole.cache.has(
-        toBigIntLiteral(Permissions.FLAGS.MANAGE_MESSAGES),
-      ) ||
-      typedMemberRole.cache.has(guild.roles.maintainer)
-    ) {
-      // @ts-expect-error
-      return await msg.message.delete()
-    }
+  //   const typedMemberRole = msg.member?.roles as GuildMemberRoleManager
+  //   if (
+  //     msg.user.id === key ||
+  //     typedMemberRole.cache.has(
+  //       toBigIntLiteral(Permissions.FLAGS.MANAGE_MESSAGES),
+  //     ) ||
+  //     typedMemberRole.cache.has(guild.roles.maintainer)
+  //   ) {
+  //     // @ts-expect-error
+  //     return await msg.message.delete()
+  //   }
 
-    return
-  }
+  //   return
+  // }
 
-  @listener({ event: 'messageReactionAdd' })
-  public async bucketEmojiClicked(
-    reaction: MessageReaction,
-    user: User,
-  ): Promise<Message | undefined> {
-    if (user.id === this.client.user?.id) {
-      return
-    }
+  // @listener({ event: 'messageReactionAdd' })
+  // public async bucketEmojiClicked(
+  //   reaction: MessageReaction,
+  //   user: User,
+  // ): Promise<Message | undefined> {
+  //   if (user.id === this.client.user?.id) {
+  //     return
+  //   }
 
-    if (reaction.partial) {
-      await reaction.fetch()
-    }
+  //   if (reaction.partial) {
+  //     await reaction.fetch()
+  //   }
 
-    if (reaction.message.channel.id === guild.channels.roles) {
-      // Don't handle the roles channel
-      return
-    }
+  //   if (reaction.message.channel.id === guild.channels.roles) {
+  //     // Don't handle the roles channel
+  //     return
+  //   }
 
-    const key = await redis.get(selfDestructMessage(reaction.message.id))
+  //   const key = await redis.get(selfDestructMessage(reaction.message.id))
 
-    if (!key) {
-      return
-    }
+  //   if (!key) {
+  //     return
+  //   }
 
-    const member = await reaction.message.guild?.members.fetch({
-      user,
-    })
+  //   const member = await reaction.message.guild?.members.fetch({
+  //     user,
+  //   })
 
-    if (
-      user.id === key ||
-      member?.permissions.has(Permissions.FLAGS.MANAGE_MESSAGES) ||
-      member?.roles.cache.has(guild.roles.maintainer)
-    ) {
-      return await reaction.message.delete()
-    }
+  //   if (
+  //     user.id === key ||
+  //     member?.permissions.has(Permissions.FLAGS.MANAGE_MESSAGES) ||
+  //     member?.roles.cache.has(guild.roles.maintainer)
+  //   ) {
+  //     return await reaction.message.delete()
+  //   }
 
-    return
-  }
+  //   return
+  // }
   //#endregion
 }

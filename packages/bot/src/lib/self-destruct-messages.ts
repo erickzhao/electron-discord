@@ -10,8 +10,8 @@ import {
   MessageButton,
   MessageActionRowComponentResolvable,
 } from 'discord.js'
-import { redis, selfDestructMessage } from './redis'
-import { style } from './config'
+// import { redis, selfDestructMessage } from './redis'
+// import { style } from './config'
 
 /**
  * Self destruct message, but which only support prefixed
@@ -50,12 +50,14 @@ export const selfDestructLegacy = async (
     components: [toUsageComponents],
   })
 
-  await redis.set(
-    selfDestructMessage(message.id),
-    msg.author.id,
-    'ex',
-    60 * 60 * 24,
-  )
+  console.log({message});
+
+  // await redis.set(
+  //   selfDestructMessage(message.id),
+  //   msg.author.id,
+  //   'ex',
+  //   60 * 60 * 24,
+  // )
 }
 
 export const createSelfDestructMessage = async (
@@ -90,24 +92,23 @@ export const createSelfDestructMessage = async (
   })
 
   const message = await msg.fetchReply()
+  console.log({message})
 
-  await redis.set(
-    selfDestructMessage(message.id),
-    msg.user.id,
-    'ex',
-    60 * 60 * 24,
-  )
-
-  return
+  // await redis.set(
+  //   selfDestructMessage(message.id),
+  //   msg.user.id,
+  //   'ex',
+  //   60 * 60 * 24,
+  // )
 }
 
-export const reactAsSelfDesturct = async (msg: Message) => {
-  await redis.set(
-    selfDestructMessage(msg.id),
-    msg.author.id,
-    'ex',
-    60 * 60 * 24,
-  )
+// export const reactAsSelfDesturct = async (msg: Message) => {
+//   await redis.set(
+//     selfDestructMessage(msg.id),
+//     msg.author.id,
+//     'ex',
+//     60 * 60 * 24,
+//   )
 
-  return await msg.react(style.emojis.deleteBucket)
-}
+//   return await msg.react(style.emojis.deleteBucket)
+// }

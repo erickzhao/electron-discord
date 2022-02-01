@@ -3,6 +3,6 @@
 // found in the LICENSE file.
 
 export * from './filters'
-export * from './infractions'
+// export * from './infractions'
 export * from './misc'
 export * from './modlog'

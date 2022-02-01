@@ -90,9 +90,7 @@ export class DocsModule extends ExtendedModule {
       })
 
       if (!hits.length) {
-        return await createSelfDestructMessage(msg, {
-          embeds: [this.NOT_FOUND_EMBED(entry)],
-        })
+        return;
       }
 
       result = hits[0]
