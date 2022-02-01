@@ -77,6 +77,7 @@ export const guild = {
     maintainer: b('745039155498582067'),
     helpCooldown: b('772835574197256199'),
     regular: b('828009346251227148'),
+    helper: b('938207146456252488'),
 
     //#region etc
 

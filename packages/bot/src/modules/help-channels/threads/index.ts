@@ -5,19 +5,23 @@
 import { LunaworkClient, listener, Stage } from '@siberianmh/lunawork'
 import {
   Message,
-  GuildMember,
-  Collection,
-  Snowflake,
   ThreadChannel,
-  ThreadMember,
 } from 'discord.js'
 import { guild } from '../../../lib/config'
 
+/**
+ * Module for moderating and automating help threads.
+ */
 export class ThreadHelpStage extends Stage {
   public constructor(client: LunaworkClient) {
     super(client)
   }
 
+  /**
+   * Whenever a message is sent in the help channel, the bot
+   * creates a thread for the user.
+   * @param msg
+   */
   @listener({ event: 'messageCreate' })
   public async onNewQuestion(msg: Message) {
     if (
@@ -30,46 +34,34 @@ export class ThreadHelpStage extends Stage {
       return
     }
 
-    const createdThread = await msg.channel.threads.create({
+    await msg.channel.threads.create({
       autoArchiveDuration: 1440,
-      name: `Help Channel for ${msg.author.username} (${msg.id})`,
-      reason: 'Someone want something new',
+      name: `Help: ${msg.author.username}`,
+      reason: `Help thread for user ${msg.author.username}`,
       startMessage: msg.id,
       type: 'GUILD_PUBLIC_THREAD',
     })
-
-    await createdThread.setLocked(true, 'Should be closed by system')
   }
 
-  // @listener({ event: 'threadMembersUpdate' })
-  // public async onThreadMembersUpdate(
-  //   _oldMembers: Collection<Snowflake, ThreadMember>,
-  //   newMembers: Collection<Snowflake, ThreadMember>,
-  // ) {
-  //   // Some other thread do this.
-  //   const newMembersMap = [...newMembers.values()]
-  //   if (newMembersMap[0].thread.parentId !== guild.channels.threadHelpChannel) {
-  //     return
-  //   }
+  /**
+   * Invites all `Helper` role users to any new thread.
+   * @param thread 
+   */
+  @listener({ event: 'threadCreate'})
+  public async onNewThread(thread: ThreadChannel) {
+    if (
+      !thread.guild ||
+      thread.parentId !== guild.channels.threadHelpChannel
+    ) {
+      return
+    }
+    const helperRole = await thread.guild.roles.fetch(guild.roles.helper);
 
-  //   const channel = await HelpChannel.findOne({
-  //     where: { channel_id: newMembersMap[0].thread.id },
-  //   })
-
-  //   const member = newMembersMap.find(
-  //     (x) => x.guildMember!.id === channel!.user_id,
-  //   )
-
-  //   if (!member) {
-  //     const roleManger = (
-  //       await (
-  //         await this.client.guilds.fetch(guild.id)
-  //       ).members.fetch(channel!.user_id)
-  //     ).roles
-
-  //     await roleManger.remove(guild.roles.helpCooldown)
-  //     await channel!.remove()
-  //     await newMembersMap[0].thread.setArchived(true, 'User left the thread')
-  //   }
-  // }
+    if (helperRole) {
+      const { members } = helperRole;
+      for (const [,member] of members) {
+        await thread.members.add(member);
+      }
+    }
+  }
 }
