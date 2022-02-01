@@ -23,7 +23,7 @@ import * as humanizeDuration from 'humanize-duration'
 import { ExtendedModule } from '../../lib/extended-module'
 import { guild } from '../../lib/config'
 import { isTrustedMember } from '../../lib/inhibitors'
-import { selfDestructMessage } from '../../lib/redis'
+// import { selfDestructMessage } from '../../lib/redis'
 import { toBigIntLiteral } from '../../lib/to-bigint-literal'
 
 export class EtcModule extends ExtendedModule {
