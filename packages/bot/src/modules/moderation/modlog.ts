@@ -157,28 +157,6 @@ export class ModLogModule extends ExtendedModule {
   }
 
   /**
-   * Log channel update event to mod log.
-   *
-   *  TODO: Finish this listener
-   */
-  @listener({ event: 'channelUpdate' })
-  public async onGuildChannelUpdate(before: GuildChannel, after: GuildChannel) {
-    if (before.guild.id !== constants.guild.id) {
-      return
-    }
-
-    const helpCategories = [
-      constants.guild.categories.helpAvailable,
-      constants.guild.categories.helpDormant,
-      constants.guild.categories.helpOngoing,
-    ]
-
-    if (helpCategories.includes(after.parentId!)) {
-      return
-    }
-  }
-
-  /**
    * Log thread create event to mod log.
    */
   @listener({ event: 'threadCreate' })

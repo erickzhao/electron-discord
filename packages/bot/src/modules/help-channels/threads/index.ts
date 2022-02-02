@@ -55,13 +55,6 @@ export class ThreadHelpStage extends Stage {
     ) {
       return
     }
-    const helperRole = await thread.guild.roles.fetch(guild.roles.helper);
-
-    if (helperRole) {
-      const { members } = helperRole;
-      for (const [,member] of members) {
-        await thread.members.add(member);
-      }
-    }
+    thread.send(`👋 Hey there, thanks for using our help thread system! Looping in the <@&${guild.roles.helper}> role.`);
   }
 }

@@ -51,12 +51,6 @@ export const guild = {
   id: b('928801162600255509'),
   invite: 'https://discord.gg/electronjs',
 
-  categories: {
-    helpAvailable: b('928801163548192782'),
-    helpOngoing: b('928801163548192785'),
-    helpDormant: b('928801163548192786'),
-  },
-
   // these are hard-coded channel ID values
   // change if this changes!
   channels: {
@@ -69,6 +63,7 @@ export const guild = {
     askHelpChannel: b('928801163170684964'),
     threadHelpChannel: b('928801163170684965'),
     modLog: b('928801163548192779'),
+    communityMeta: b('928801163170684967'),
   },
 
   roles: {
@@ -108,29 +103,4 @@ export const guild = {
 
 export const urls = {
   githubBotURL: 'https://github.com/siberianmh/electron-discord',
-}
-
-export const helpChannels = {
-  /**
-   * The number of maximum help channels which can be taken.
-   */
-  maxAvailableHelpChannels: 2,
-
-  /**
-   * Allowed duration of inactivity before marking a channel dormant.
-   */
-  dormantChannelTimeout: 12, // hours
-
-  dormantChannelLoop: 120000, // ms
-
-  /**
-   * Maximum number of channels across all 3 categories
-   * **N.B.** Discord has a hard limit of 50 channels per category, so this shouldn't be > 50
-   */
-  maxTotalChannels: 32,
-
-  /**
-   * Prefix for help channel names
-   */
-  namePrefix: 'help-',
 }
