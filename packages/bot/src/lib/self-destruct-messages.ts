@@ -37,12 +37,12 @@ export const selfDestructLegacy = async (
     toUsageComponents.spliceComponents(0, 0, ...components)
   }
 
-  toUsageComponents.addComponents(
-    new MessageButton()
-      .setCustomId('trashIcon')
-      .setEmoji('🗑️')
-      .setStyle('DANGER'),
-  )
+  // toUsageComponents.addComponents(
+  //   new MessageButton()
+  //     .setCustomId('trashIcon')
+  //     .setEmoji('🗑️')
+  //     .setStyle('DANGER'),
+  // )
 
   const message = await msg.channel.send({
     content: content,
@@ -78,21 +78,18 @@ export const createSelfDestructMessage = async (
     toUsageComponents.spliceComponents(0, 0, ...components)
   }
 
-  toUsageComponents.addComponents(
-    new MessageButton()
-      .setCustomId('trashIcon')
-      .setEmoji('🗑️')
-      .setStyle('DANGER'),
-  )
+  // toUsageComponents.addComponents(
+  //   new MessageButton()
+  //     .setCustomId('trashIcon')
+  //     .setEmoji('🗑️')
+  //     .setStyle('DANGER'),
+  // )
 
   await msg.reply({
     content: content,
     embeds: embeds,
     components: [toUsageComponents],
   })
-
-  const message = await msg.fetchReply()
-  console.log({message})
 
   // await redis.set(
   //   selfDestructMessage(message.id),

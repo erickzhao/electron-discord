@@ -4,6 +4,7 @@
 
 import { LunaworkClient } from '@siberianmh/lunawork'
 import { Intents } from 'discord.js'
+import { ActivityTypes } from 'discord.js/typings/enums'
 
 export const client = new LunaworkClient({
   defaultPrefix: ['!', 'e!', '.'],
@@ -26,8 +27,8 @@ export const client = new LunaworkClient({
   presence: {
     activities: [
       {
-        type: 'PLAYING',
-        name: 'хочу подраться, да никого кругом',
+        type: ActivityTypes.PLAYING,
+        name: 'MapleStory',
       },
     ],
   },
