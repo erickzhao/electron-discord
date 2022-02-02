@@ -80,7 +80,7 @@ export class TagsModule extends ExtendedModule {
         required: true,
         choices: [
           {
-            name: '`Uncaught ReferenceE rror: require is not defined` even if `nodeIntegration` is set to `true`',
+            name: '`Uncaught ReferenceError: require is not defined` even if `nodeIntegration` is set to `true`',
             value: 'require-in-renderer',
           },
           {

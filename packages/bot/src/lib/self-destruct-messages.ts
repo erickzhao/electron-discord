@@ -50,8 +50,6 @@ export const selfDestructLegacy = async (
     components: [toUsageComponents],
   })
 
-  console.log({message});
-
   // await redis.set(
   //   selfDestructMessage(message.id),
   //   msg.author.id,
@@ -85,11 +83,19 @@ export const createSelfDestructMessage = async (
   //     .setStyle('DANGER'),
   // )
 
-  await msg.reply({
-    content: content,
-    embeds: embeds,
-    components: [toUsageComponents],
-  })
+  if (components) {
+    await msg.reply({
+      content: content,
+      embeds: embeds,
+      components: [toUsageComponents],
+    })
+  } else {
+    await msg.reply({
+      content: content,
+      embeds: embeds,
+    })
+  }
+
 
   // await redis.set(
   //   selfDestructMessage(message.id),
