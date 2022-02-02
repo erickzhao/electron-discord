@@ -57,7 +57,6 @@ export const guild = {
     roles: b('928801163170684960'),
     releases: b('928801163170684961'),
     rules: b('928801163170684962'),
-    voiceRules: b('928801163170684963'),
     adminBotInteractions: b('928801163170684967'),
     memberLog: b('928801163548192778'),
     askHelpChannel: b('928801163170684964'),
