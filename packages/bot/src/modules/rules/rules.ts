@@ -8,7 +8,7 @@ import { ExtendedModule } from '../../lib/extended-module'
 import { guild } from '../../lib/config'
 import { deepEqual } from '../../lib/deep-equal'
 import { rulesText } from './rules-text'
-import { voiceRulesText } from './voice-rules'
+import { helpMessage } from '../help-channels/help-message'
 
 export class RulesModule extends ExtendedModule {
   public constructor(client: LunaworkClient) {
@@ -40,30 +40,20 @@ export class RulesModule extends ExtendedModule {
   }
 
   @listener({ event: 'ready' })
-  public async syncVoiceRules(): Promise<Message | undefined> {
+  public async syncHowToGetHelp() {
     if (process.env.NODE_ENV === 'development') {
       return
     }
 
-    const rulesChannel = (await this.client.channels.fetch(
-      guild.channels.voiceRules,
+    const howToGetHelpChannel = (await this.client.channels.fetch(
+      guild.channels.askHelpChannel,
     )) as TextChannel
-    const lastMessage = (await rulesChannel.messages.fetch()).last()
+    const lastMessage = (await howToGetHelpChannel.messages.fetch()).last()
 
-    if (lastMessage && !lastMessage.author.bot) {
+    if (lastMessage?.embeds[0] && !lastMessage.embeds[0].equals(helpMessage())) {
       await lastMessage.delete()
-      return await rulesChannel.send({ embeds: [voiceRulesText()] })
     }
 
-    if (!lastMessage) {
-      return await rulesChannel.send({ embeds: [voiceRulesText()] })
-    }
-
-    if (!deepEqual(lastMessage.embeds[0].fields, voiceRulesText().fields)) {
-      await lastMessage.delete()
-      return await rulesChannel.send({ embeds: [voiceRulesText()] })
-    }
-
-    return
+    await howToGetHelpChannel.send({ embeds: [helpMessage()] })
   }
 }
