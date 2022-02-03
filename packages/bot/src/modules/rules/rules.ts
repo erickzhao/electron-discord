@@ -8,7 +8,7 @@ import { ExtendedModule } from '../../lib/extended-module'
 import { guild } from '../../lib/config'
 import { deepEqual } from '../../lib/deep-equal'
 import { rulesText } from './rules-text'
-import { helpMessage } from '../help-channels/help-message'
+import { helpMessage } from '../help-channels/asking-for-help-embed'
 
 export class RulesModule extends ExtendedModule {
   public constructor(client: LunaworkClient) {
