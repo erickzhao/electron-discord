@@ -60,6 +60,7 @@ export const guild = {
     adminBotInteractions: b('928801163170684967'),
     memberLog: b('928801163548192778'),
     askHelpChannel: b('928801163170684964'),
+    activeThreadsChannel: b('938723367622676511'),
     threadHelpChannel: b('928801163170684965'),
     modLog: b('928801163548192779'),
     communityMeta: b('928801163170684967'),
