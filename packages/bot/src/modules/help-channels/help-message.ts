@@ -31,4 +31,3 @@ export const helpMessage = () =>
       '💌 Feedback appreciated',
       `This is a new system we're trying out! Please redirect feedback to <#${guild.channels.communityMeta}> channel.`,
     )
-    .setTimestamp();
