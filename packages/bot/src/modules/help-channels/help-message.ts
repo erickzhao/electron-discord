@@ -5,10 +5,10 @@
 import { MessageEmbed } from 'discord.js'
 import { guild } from '../../lib/config'
 
-export const helpMessage = () => 
+export const helpMessage = () =>
   new MessageEmbed()
     .setTitle('Asking for Help')
-    .setDescription('What\'s the best way of getting help in the server?')
+    .setDescription("What's the best way of getting help in the server?")
     .setColor('#A2ECFB')
     .setThumbnail('https://i.imgur.com/Boe7zGI.gif')
     .addField(

@@ -44,15 +44,15 @@ You need to create the Bot account, you can do this following these steps:
 1. Change the setting of `Public Bot` to off, and copy the `Bot Token`, and save
    them in the `.env` file in the root project directory. Under
    `Privileged Gateway Intents` enable all\*
-1. In the `General Information` section, take the **Application ID**, and invite the
-   bot using the following URL:
+1. In the `General Information` section, take the **Application ID**, and invite
+   the bot using the following URL:
 
 ```http
 https://discord.com/api/oauth2/authorize?client_id=<CLIENT_ID>&permissions=8&scope=bot%20applications.commands
 ```
 
-This will give the bot `Administrator` permissions as well as access to
-slash commands.
+This will give the bot `Administrator` permissions as well as access to slash
+commands.
 
 \* - Either way, we don't require them all, but for stable bot work, it's
 preferred to enable them all.

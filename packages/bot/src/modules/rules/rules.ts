@@ -50,7 +50,10 @@ export class RulesModule extends ExtendedModule {
     )) as TextChannel
     const lastMessage = (await howToGetHelpChannel.messages.fetch()).last()
 
-    if (lastMessage?.embeds[0] && !lastMessage.embeds[0].equals(helpMessage())) {
+    if (
+      lastMessage?.embeds[0] &&
+      !lastMessage.embeds[0].equals(helpMessage())
+    ) {
       await lastMessage.delete()
     }
 

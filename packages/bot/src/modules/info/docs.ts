@@ -90,7 +90,7 @@ export class DocsModule extends ExtendedModule {
       })
 
       if (!hits.length) {
-        return;
+        return
       }
 
       result = hits[0]

@@ -96,7 +96,6 @@ export const createSelfDestructMessage = async (
     })
   }
 
-
   // await redis.set(
   //   selfDestructMessage(message.id),
   //   msg.user.id,

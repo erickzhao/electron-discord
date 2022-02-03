@@ -3,10 +3,7 @@
 // found in the LICENSE file.
 
 import { LunaworkClient, listener, Stage } from '@siberianmh/lunawork'
-import {
-  Message,
-  ThreadChannel,
-} from 'discord.js'
+import { Message, ThreadChannel } from 'discord.js'
 import { guild } from '../../../lib/config'
 
 /**
@@ -45,16 +42,15 @@ export class ThreadHelpStage extends Stage {
 
   /**
    * Invites all `Helper` role users to any new thread.
-   * @param thread 
+   * @param thread
    */
-  @listener({ event: 'threadCreate'})
+  @listener({ event: 'threadCreate' })
   public async onNewThread(thread: ThreadChannel) {
-    if (
-      !thread.guild ||
-      thread.parentId !== guild.channels.threadHelpChannel
-    ) {
+    if (!thread.guild || thread.parentId !== guild.channels.threadHelpChannel) {
       return
     }
-    thread.send(`👋 Hey there, thanks for using our help thread system! Looping in the <@&${guild.roles.helper}> role.`);
+    thread.send(
+      `👋 Hey there, thanks for using our help thread system! Looping in the <@&${guild.roles.helper}> role.`,
+    )
   }
 }
