@@ -24,7 +24,7 @@ import {
   MiscStuffStage,
   // RobloxGamePresenceModule,
   // RolesModule,
-  RulesModule,
+  ReadmeStage,
   TagsModule,
   UnfurlModule,
 } from './modules'
@@ -52,7 +52,7 @@ const stages: Array<typeof Stage | Stage> = [
   // InfractionsModule,
   ModLogModule,
   // RobloxGamePresenceModule,
-  RulesModule,
+  ReadmeStage,
   TagsModule,
   ThreadHelpStage,
   UnfurlModule,

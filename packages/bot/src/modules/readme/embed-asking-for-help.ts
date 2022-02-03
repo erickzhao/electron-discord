@@ -5,7 +5,7 @@
 import { MessageEmbed } from 'discord.js'
 import { guild } from '../../lib/config'
 
-export const helpMessage = () =>
+export const getHelpEmbed = () =>
   new MessageEmbed()
     .setTitle('Asking for Help')
     .setDescription("What's the best way of getting help in the server?")

@@ -4,9 +4,10 @@
 
 import { MessageEmbed } from 'discord.js'
 
-export const rulesText = () =>
+export const getRulesEmbed = () =>
   new MessageEmbed()
     .setTitle('Electron Discord Rules')
+    .setThumbnail('https://i.imgur.com/tFVMobz.gif')
     .setDescription(
       'We have a small set of rules on our server, please read them.',
     )
