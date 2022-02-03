@@ -171,7 +171,7 @@ export class DocsModule extends ExtendedModule {
         this.getHighlightedValue(hit, 'lvl6'),
       ]).join(' › ')
 
-      result.push({ name: displayTitle, value: hit.objectID })
+      result.push({ name: displayTitle.slice(0, 99), value: hit.objectID })
     }
 
     return msg.respond(result)
