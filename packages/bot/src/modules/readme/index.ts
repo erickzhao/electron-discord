@@ -11,7 +11,7 @@ import { getHelpEmbed } from './embed-asking-for-help'
 /**
  * Syncs basic text README files to specific channels.
  * Currently only supports single embeds.
-*/
+ */
 export class ReadmeStage extends Stage {
   public constructor(client: LunaworkClient) {
     super(client)
@@ -25,9 +25,7 @@ export class ReadmeStage extends Stage {
 
   private async syncReadme(channelId: Snowflake, embed: MessageEmbed) {
     const server = await this.client.guilds.fetch(guild.id)
-    const channel = await server.channels.fetch(
-      channelId
-    )
+    const channel = await server.channels.fetch(channelId)
 
     if (channel?.isText()) {
       const messages = await channel.messages.fetch()
@@ -38,11 +36,13 @@ export class ReadmeStage extends Stage {
         // if we're the author, edit it
         if (latest.author.bot) {
           await latest.edit(payload)
-        } else { // otherwise, clear channel and send new message
+        } else {
+          // otherwise, clear channel and send new message
           await channel.bulkDelete(50)
           await channel.send(payload)
         }
-      } else if (!latest) { // if no latest message exists, send one
+      } else if (!latest) {
+        // if no latest message exists, send one
         await channel.send(payload)
       }
     }
