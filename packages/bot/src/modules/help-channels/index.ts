@@ -2,10 +2,10 @@
 // Use of this source code is governed by the MIT license that can be
 // found in the LICENSE file.
 
-import { LunaworkClient, listener, Stage } from '@siberianmh/lunawork'
-import { Message, Snowflake, ThreadChannel } from 'discord.js'
+import { LunaworkClient, listener, Stage, applicationCommand, ApplicationCommandOptionType } from '@siberianmh/lunawork'
+import { CommandInteraction, Message, Snowflake, ThreadChannel, User } from 'discord.js'
 import { guild } from '../../lib/config'
-import { activeThreadEmbed } from './active-thread-embed'
+import { activeThreadEmbed } from './embed-active-thread'
 
 /**
  * Module for moderating and automating help threads.
@@ -53,6 +53,74 @@ export class ThreadHelpStage extends Stage {
     thread.send(
       `👋 Hey there, thanks for using our help thread system! Looping in the <@&${guild.roles.helper}> role.`,
     )
+  }
+
+  @applicationCommand({
+    description: 'Modify the current help thread',
+    // options: []
+    options: [
+      {
+        name: 'title',
+        description: 'Change your thread title',
+        type: ApplicationCommandOptionType.Subcommand,
+        options: [
+          {
+            type: ApplicationCommandOptionType.String,
+            name: 'newtitle',
+            description: 'Your new thread title',
+            required: true,
+          }
+        ]
+      },
+      {
+        name: 'archive',
+        description: 'Archive your thread',
+        type: ApplicationCommandOptionType.Subcommand,
+      },
+    ],
+  })
+  async helpthread(msg: CommandInteraction, { subCommand }: {subCommand: string}) {
+    const { channel } = msg;
+
+    // only allow usage of command on help threads
+    if (channel?.isThread() && isHelpThread(channel)) {
+      const originalPost = await channel.fetchStarterMessage();
+      const threadAuthor = originalPost.author;
+
+      // only allow usage
+      if (msg.user.id === threadAuthor.id) {
+        switch (subCommand) {
+          case 'title':
+            const newTitle = msg.options.getString('newtitle')
+            if (typeof newTitle === 'string' && newTitle.length > 0) {
+              await channel.setName(newTitle);
+              return msg.reply({
+                content: 'I set your channel name!',
+                ephemeral: true,
+              })
+            } else {
+              return msg.reply({
+                content: ':warning: Failed to new set channel name.',
+                ephemeral: true,
+              })
+            }
+          case 'archive':
+            await msg.reply(`Archiving thread on <@${threadAuthor.id}>'s request. Thanks for using the help thread system!`)
+            await channel.setArchived(true, 'Thread closed by OP.')
+            return
+        }
+      } else {
+        return msg.reply({
+          content: ':warning: You have to be the asker to modify this thread.',
+          ephemeral: true,
+        })
+      }
+    } else {
+      return msg.reply({
+        content: ':warning: `/helpthread` commands must be run within a help thread.',
+        ephemeral: true,
+      })
+    }
   }
 }
 
