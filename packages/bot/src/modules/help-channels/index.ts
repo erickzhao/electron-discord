@@ -2,8 +2,20 @@
 // Use of this source code is governed by the MIT license that can be
 // found in the LICENSE file.
 
-import { LunaworkClient, listener, Stage, applicationCommand, ApplicationCommandOptionType } from '@siberianmh/lunawork'
-import { CommandInteraction, Message, Snowflake, ThreadChannel, User } from 'discord.js'
+import {
+  LunaworkClient,
+  listener,
+  Stage,
+  applicationCommand,
+  ApplicationCommandOptionType,
+} from '@siberianmh/lunawork'
+import {
+  CommandInteraction,
+  Message,
+  Snowflake,
+  ThreadChannel,
+  User,
+} from 'discord.js'
 import { guild } from '../../lib/config'
 import { activeThreadEmbed } from './embed-active-thread'
 
@@ -51,18 +63,17 @@ export class ThreadHelpStage extends Stage {
       return
     }
     thread.send(
-      ([
+      [
         `👋 Hey there, thanks for using our help thread system!`,
         `Looping in the <@&${guild.roles.helper}> role.`,
         `To rename this thread, use the \`/helpthread title\` command.`,
-        `When you're done, use the \`/helpthread archive\` command to archive this channel.`
-      ]).join(' ')
+        `When you're done, use the \`/helpthread archive\` command to archive this channel.`,
+      ].join(' '),
     )
   }
 
   @applicationCommand({
     description: 'Modify the current help thread',
-    // options: []
     options: [
       {
         name: 'title',
@@ -74,8 +85,8 @@ export class ThreadHelpStage extends Stage {
             name: 'newtitle',
             description: 'Your new thread title',
             required: true,
-          }
-        ]
+          },
+        ],
       },
       {
         name: 'archive',
@@ -84,13 +95,16 @@ export class ThreadHelpStage extends Stage {
       },
     ],
   })
-  async helpthread(msg: CommandInteraction, { subCommand }: {subCommand: string}) {
-    const { channel } = msg;
+  async helpthread(
+    msg: CommandInteraction,
+    { subCommand }: { subCommand: string },
+  ) {
+    const { channel } = msg
 
     // only allow usage of command on help threads
     if (channel?.isThread() && isHelpThread(channel)) {
-      const originalPost = await channel.fetchStarterMessage();
-      const threadAuthor = originalPost.author;
+      const originalPost = await channel.fetchStarterMessage()
+      const threadAuthor = originalPost.author
 
       // only allow usage
       if (msg.user.id === threadAuthor.id) {
@@ -98,7 +112,7 @@ export class ThreadHelpStage extends Stage {
           case 'title':
             const newTitle = msg.options.getString('newtitle')
             if (typeof newTitle === 'string' && newTitle.length > 0) {
-              await channel.setName(newTitle);
+              await channel.setName(newTitle)
               return msg.reply({
                 content: 'I set your channel name!',
                 ephemeral: true,
@@ -110,7 +124,9 @@ export class ThreadHelpStage extends Stage {
               })
             }
           case 'archive':
-            await msg.reply(`Archiving thread on <@${threadAuthor.id}>'s request. Thanks for using the help thread system!`)
+            await msg.reply(
+              `Archiving thread on <@${threadAuthor.id}>'s request. Thanks for using the help thread system!`,
+            )
             await channel.setArchived(true, 'Thread closed by OP.')
             return
         }
@@ -122,7 +138,8 @@ export class ThreadHelpStage extends Stage {
       }
     } else {
       return msg.reply({
-        content: ':warning: `/helpthread` commands must be run within a help thread.',
+        content:
+          ':warning: `/helpthread` commands must be run within a help thread.',
         ephemeral: true,
       })
     }

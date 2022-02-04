@@ -65,7 +65,7 @@ export class DocsModule extends ExtendedModule {
 
   @applicationCommand({
     name: 'docs',
-    description: 'Search in the docs',
+    description: 'Search Electron\'s documentation',
     options: [
       {
         name: 'entry',
