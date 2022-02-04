@@ -51,7 +51,12 @@ export class ThreadHelpStage extends Stage {
       return
     }
     thread.send(
-      `👋 Hey there, thanks for using our help thread system! Looping in the <@&${guild.roles.helper}> role.`,
+      ([
+        `👋 Hey there, thanks for using our help thread system!`,
+        `Looping in the <@&${guild.roles.helper}> role.`,
+        `To rename this thread, use the \`/helpthread title\` command.`,
+        `When you're done, use the \`/helpthread archive\` command to archive this channel.`
+      ]).join(' ')
     )
   }
 
