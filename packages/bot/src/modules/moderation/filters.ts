@@ -4,11 +4,11 @@
 
 import { LunaworkClient, listener } from '@siberianmh/lunawork'
 import { Message, Permissions, User } from 'discord.js'
-import { ExtendedModule } from '../../../lib/extended-module'
-import { ModLogModule } from '../../../modules/moderation'
-import { guild, style } from '../../../lib/config'
-import { Awaited } from '../../../lib/types'
-import { formatUser } from '../../../lib/format'
+import { ExtendedModule } from '../../lib/extended-module'
+import { ModLogModule } from '.'
+import { guild, style } from '../../lib/config'
+import { Awaited } from '../../lib/types'
+import { formatUser } from '../../lib/format'
 
 interface IFilter {
   /**

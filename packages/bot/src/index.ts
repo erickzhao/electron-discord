@@ -7,64 +7,34 @@ if (process.env.NODE_ENV === 'development') {
 }
 
 import { Stage } from '@siberianmh/lunawork'
-// import * as Sentry from '@sentry/node'
 import {
-  AntimalwareStage,
   FiltersStage,
-  // DownloadModule,
   DocsModule,
   ActiveThreadListStage,
   EtcModule,
   ThreadHelpStage,
   HacktoberfestStage,
-  // HelpChanModule,
-  // HelpChannelStaff,
-  // InfractionsModule,
   ModLogModule,
   MiscStuffStage,
-  // RobloxGamePresenceModule,
-  // RolesModule,
   ReadmeStage,
   TagsModule,
   UnfurlModule,
 } from './modules'
 import { client } from './lib/discord'
-// import { connectMySQL } from './lib/connect-mysql'
-import { enableRolesModule, enableThreadHelp } from './lib/runtime'
-
-// Sentry.init({
-//   dsn: 'https://a22da8923d5f4ea7875fa8518335410b@o102026.ingest.sentry.io/5474186',
-//   enabled: process.env.NODE_ENV !== 'development',
-//   tracesSampleRate: 1.0,
-// })
 
 const stages: Array<typeof Stage | Stage> = [
-  // AntimalwareStage,
   FiltersStage,
   MiscStuffStage,
-  // DownloadModule,
   DocsModule,
   ActiveThreadListStage,
   EtcModule,
   HacktoberfestStage,
-  // HelpChanModule,
-  // HelpChannelStaff,
-  // InfractionsModule,
   ModLogModule,
-  // RobloxGamePresenceModule,
   ReadmeStage,
   TagsModule,
   ThreadHelpStage,
   UnfurlModule,
 ]
-
-// if (enableThreadHelp) {
-//   stages.push(ThreadHelpStage)
-// }
-
-// if (enableRolesModule) {
-//   stages.push(RolesModule)
-// }
 
 client.registerStages(stages)
 
