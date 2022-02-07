@@ -44,6 +44,8 @@ export class ThreadHelpStage extends Stage {
       return
     }
 
+    await msg.react('🧵')
+
     await msg.channel.threads.create({
       autoArchiveDuration: 1440,
       name: `Help: ${msg.author.username}`,
@@ -103,11 +105,17 @@ export class ThreadHelpStage extends Stage {
 
     // only allow usage of command on help threads
     if (channel?.isThread() && isHelpThread(channel)) {
-      const originalPost = await channel.fetchStarterMessage()
-      const threadAuthor = originalPost.author
+      let originalPost
 
-      // only allow usage
-      if (msg.user.id === threadAuthor.id) {
+      try {
+        originalPost = await channel.fetchStarterMessage()
+      } catch(e) {
+        // Original post is deleted, we'll let anyone
+        // archive in this case.
+      }
+      const threadAuthor = originalPost?.author
+
+      if (!threadAuthor || msg.user.id === threadAuthor.id) {
         switch (subCommand) {
           case 'title':
             const newTitle = msg.options.getString('newtitle')
@@ -125,7 +133,7 @@ export class ThreadHelpStage extends Stage {
             }
           case 'archive':
             await msg.reply(
-              `Archiving thread on <@${threadAuthor.id}>'s request. Thanks for using the help thread system!`,
+              `Archiving thread on <@${msg.user.id}>'s request. Thanks for using the help thread system!`,
             )
             await channel.setArchived(true, 'Thread closed by OP.')
             return
