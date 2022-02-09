@@ -71,7 +71,7 @@ export class TagsModule extends ExtendedModule {
   }
 
   @applicationCommand({
-    description: 'Get an answer for frequet question',
+    description: 'Get an answer from Electron\'s FAQ',
     options: [
       {
         name: 'entry',
